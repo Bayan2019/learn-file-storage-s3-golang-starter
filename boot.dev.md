@@ -123,6 +123,30 @@ And when your app is small, the performance benefits of aggressively caching fil
 
 ## AWS S3
 
+### Single Machine
+
+In a "simple" web application architecture, your server is likely a single machine running in the cloud. 
+That single machine probably runs:
+
+1. An HTTP server that handles the incoming requests
+2. A database running in the background that the HTTP server talks to
+3. A file system the server uses to directly read and write larger files
+
+### AWS
+
+AWS (Amazon Web Services) is one of the (at least in my mind) "Big Three" cloud providers. 
+The other two are Google Cloud and Microsoft Azure.
+
+AWS is the oldest, largest, and most popular of the three, generally speaking.
+
+### Serveless
+
+### Upload Object
+
+### Architecture
+
+### SDK and S3
+
 ## Object Storage
 
 ## Video Streaming
