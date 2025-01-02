@@ -141,6 +141,17 @@ AWS is the oldest, largest, and most popular of the three, generally speaking.
 
 ### Serveless
 
+"Serverless" is an architecture (and let's be honest, a buzzword) that refers to a system where you don't have to manage the servers on your own.
+
+You'll often see "Serverless" used to describe services like AWS Lambda, Google Cloud Functions, and Azure Functions. 
+And that's true, but it refers to "serverless" in its most "pure" form: serverless compute.
+
+AWS S3 was actually one of the first "serverless" services, and is arguably still the most popular. 
+It's not serverless compute, it's serverless storage. 
+You don't have to manage/scale/secure the servers that store your files, AWS does that for you.
+
+Instead of going to a local file system, your server makes network requests to the S3 API to read and write files.
+
 ### Upload Object
 
 ### Architecture
