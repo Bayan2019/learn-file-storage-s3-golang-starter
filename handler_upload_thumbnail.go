@@ -1,10 +1,11 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
 	"io"
+	"mime"
 	"net/http"
+	"os"
 
 	"github.com/bootdotdev/learn-file-storage-s3-golang-starter/internal/auth"
 	"github.com/google/uuid"
@@ -49,18 +50,43 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 	defer file.Close()
 
 	// Get the media type from the file's Content-Type header
-	mediaType := header.Header.Get("Content-Type")
-	if mediaType == "" {
-		respondWithError(w, http.StatusBadRequest, "Missing Content-Type for thumbnail", nil)
+	// Use the mime.ParseMediaType function to get the media type from the Content-Type header
+	mediaType, _, err := mime.ParseMediaType(header.Header.Get("Content-Type"))
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid Content-Type", err)
+		return
+	}
+	// If the media type isn't either image/jpeg or image/png,
+	// respond with an error (respondWithError helper)
+	if mediaType != "image/jpeg" && mediaType != "image/png" {
+		respondWithError(w, http.StatusBadRequest, "Invalid file type", nil)
+		return
+	}
+
+	// Use the Content-Type header to determine the file extension
+	// Use the videoID to create a unique file path.
+	assetPath := getAssetPath(videoID, mediaType)
+	assetDiskPath := cfg.getAssetDiskPath(assetPath)
+
+	// Use os.Create to create the new file
+	dst, err := os.Create(assetDiskPath)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Unable to create file on server", err)
+		return
+	}
+	defer dst.Close()
+	// Copy the contents from the multipart.File to the new file on disk using io.Copy
+	if _, err = io.Copy(dst, file); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error saving file", err)
 		return
 	}
 
 	// Read all the image data into a byte slice using io.ReadAll
-	data, err := io.ReadAll(file)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Error reading file", err)
-		return
-	}
+	// data, err := io.ReadAll(file)
+	// if err != nil {
+	// 	respondWithError(w, http.StatusInternalServerError, "Error reading file", err)
+	// 	return
+	// }
 
 	// Get the video's metadata from the SQLite database.
 	// The apiConfig's db has a GetVideo method you can use
@@ -85,11 +111,15 @@ func (cfg *apiConfig) handlerUploadThumbnail(w http.ResponseWriter, r *http.Requ
 
 	// Use base64.StdEncoding.EncodeToString from the encoding/base64 package
 	// to convert the image data to a base64 string.
-	base64Encoded := base64.StdEncoding.EncodeToString(data)
+	// base64Encoded := base64.StdEncoding.EncodeToString(data)
 
-	base64DataURL := fmt.Sprintf("data:%s;base64,%s", mediaType, base64Encoded)
+	// base64DataURL := fmt.Sprintf("data:%s;base64,%s", mediaType, base64Encoded)
 	// Store the URL in the thumbnail_url column in the database.
-	video.ThumbnailURL = &base64DataURL
+
+	// Instead of encoding to base64, update the handler
+	// to save the bytes to a file at the path /assets/<videoID>.<file_extension>
+	url := cfg.getAssetURL(assetPath)
+	video.ThumbnailURL = &url
 
 	// Update the database so that the existing video record has a new thumbnail URL
 	// by using the cfg.db.UpdateVideo function.
