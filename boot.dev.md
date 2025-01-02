@@ -106,7 +106,20 @@ To cache bust, we want to alter the URL so that:
 
 ### Cache Headers
 
+Query strings are a great way to brute force cache controls as the client - but the best way (assuming you have control of the server, and c'mon, we're backend devs), is to use the Cache-Control header. 
+Some common values are:
+
+* `no-store`: Don't cache this at all
+* `max-age`=3600: Cache this for 1 hour (3600 seconds)
+* `stale-while-revalidate`: Serve stale content while revalidating the cache
+* `no-cache`: Does not mean "don't cache this". It means "cache this, but revalidate it before serving it again
+
+When the server sends Cache-Control headers, its up to the browser to respect them, but most modern browsers do.
+
 ### New Files
+
+"Stale" files are a common problem in web development. 
+And when your app is small, the performance benefits of aggressively caching files might not be worth the complexity and potential bugs that can crop up from not handling cache behavior correctly.
 
 ## AWS S3
 
