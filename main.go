@@ -1,16 +1,20 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/bootdotdev/learn-file-storage-s3-golang-starter/internal/database"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
+// Add an s3Client field to apiConfig of type *s3.Client
 type apiConfig struct {
 	db               database.Client
 	jwtSecret        string
@@ -21,6 +25,7 @@ type apiConfig struct {
 	s3Region         string
 	s3CfDistribution string
 	port             string
+	s3Client         *s3.Client
 }
 
 // Because the thumbnail_url has all the data we need,
@@ -85,6 +90,14 @@ func main() {
 		log.Fatal("PORT environment variable is not set")
 	}
 
+	// Use config.LoadDefaultConfig to auto load the default AWS SDK config (the keys you set with aws configure)
+	awsCfg, err := config.LoadDefaultConfig(context.Background())
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	// Create a client with your config using s3.NewFromConfig
+	client := s3.NewFromConfig(awsCfg)
+
 	cfg := apiConfig{
 		db:               db,
 		jwtSecret:        jwtSecret,
@@ -95,6 +108,8 @@ func main() {
 		s3Region:         s3Region,
 		s3CfDistribution: s3CfDistribution,
 		port:             port,
+		// Assign the client to the s3Client field
+		s3Client: client,
 	}
 
 	err = cfg.ensureAssetsDir()
