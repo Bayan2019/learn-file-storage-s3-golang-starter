@@ -178,6 +178,14 @@ When your code interacts with AWS resources, you'll use the SDK within your code
 
 ## Object Storage
 
+If you squint really hard, it feels like S3 is a file system in the cloud... but it's not. 
+It's technically an object storage system - which is not quite the same thing.
+
+Object storage is designed to be more scalable, available, and durable than file storage because it can be easily distributed across many machines:
+
+* Objects are stored in a flat namespace (no directories)
+* An object's metadata is stored with the object itself
+
 ## Video Streaming
 
 ## Security
