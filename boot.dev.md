@@ -194,6 +194,14 @@ So, S3 makes your objects feel like they're in directories, even though they're 
 
 Keys inside of a bucket are just strings. And strings can have slashes, right? Right.
 
+### Dynamic Path
+
+Schema architecture matters in a SQL database, and prefix architecture matters in S3. 
+We always want to group objects in a way that makes sense for our case, because often we'll want to operate on a group of objects at once.
+
+If you don't have any prefixes (directories) to group objects, you might find yourself iterating over every object in the bucket to find the ones you care about. 
+That's slow and expensive.
+
 ## Video Streaming
 
 ## Security
