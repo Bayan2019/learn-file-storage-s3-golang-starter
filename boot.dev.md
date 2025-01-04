@@ -186,6 +186,14 @@ Object storage is designed to be more scalable, available, and durable than file
 * Objects are stored in a flat namespace (no directories)
 * An object's metadata is stored with the object itself
 
+### File System Illusion
+
+Directories are really great for organizing stuff. 
+Storing everything in one giant bucket makes a big hard-to-manage mess. 
+So, S3 makes your objects feel like they're in directories, even though they're not.
+
+Keys inside of a bucket are just strings. And strings can have slashes, right? Right.
+
 ## Video Streaming
 
 ## Security
