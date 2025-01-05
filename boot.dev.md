@@ -225,6 +225,15 @@ The simplest way to stream a video file on the web (imo) is to take advantage of
 
 ### Other approaches
 
+Because we're mostly concerned with S3 and file storage in this course, we won't be doing a deep dive on all the file formats for video streaming. That said, I want to briefly cover a few of the most common ones, and point out when you might need to ditch a "plain" .mp4 file.
+
+1. Adaptive streaming: Standard mp4 files have a single resolution and bitrate. 
+    If a user's connection speed is unstable, HLS or MPEG-DASH allows for changing the quality of the stream on the fly. 
+    You may have noticed on YouTube or Netflix that your video quality changes based on your connection speed. 
+    Dropping to lower resolution is better than endlessly buffering.
+2. Live streaming: Standard mp4 files are not designed to be updated in real-time. 
+    You'd want to use a lower-latency protocol like WebRTC or RTMP for live streaming.
+
 ## Security
 
 ## CDNs
