@@ -124,12 +124,27 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 
 	key := getAssetPath(mediaType)
 	key = filepath.Join(directory, key)
+
+	processedFilePath, err := processVideoForFastStart(tempFile.Name())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error processing video", err)
+		return
+	}
+	defer os.Remove(processedFilePath)
+
+	processedFile, err := os.Open(processedFilePath)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Could not open processed file", err)
+		return
+	}
+	defer processedFile.Close()
+
 	// Put the object into S3 using PutObject.
 	_, err = cfg.s3Client.PutObject(r.Context(), &s3.PutObjectInput{
 		// The bucket name
 		Bucket:      aws.String(cfg.s3Bucket),
 		Key:         aws.String(key),
-		Body:        tempFile,
+		Body:        processedFile,
 		ContentType: aws.String(mediaType),
 	})
 	if err != nil {
@@ -195,4 +210,34 @@ func getVideoAspectRatio(filePath string) (string, error) {
 		return "9:16", nil
 	}
 	return "other", nil
+}
+
+// Create a new function that takes a file path as input
+// and creates and returns a new path to a file with "fast start" encoding
+func processVideoForFastStart(filePath string) (string, error) {
+	// Create a new string for the output file path
+	// appended .processing to the input file
+	newFilePath := fmt.Sprintf("%s.processing", filePath)
+	// Create a new exec.Cmd using exec.Command
+	exec := exec.Command("ffmpeg", "-i", filePath, "-movflags", "faststart",
+		"-codec", "copy", "-f", "mp4", newFilePath)
+
+	var stderr bytes.Buffer
+	exec.Stderr = &stderr
+
+	// Run the command
+	if err := exec.Run(); err != nil {
+		return "", fmt.Errorf("error processing video: %s, %v", stderr.String(), err)
+	}
+
+	fileInfo, err := os.Stat(newFilePath)
+	if err != nil {
+		return "", fmt.Errorf("could not stat processed file: %v", err)
+	}
+	if fileInfo.Size() == 0 {
+		return "", fmt.Errorf("processed file is empty")
+	}
+
+	// Return the output file path
+	return newFilePath, nil
 }

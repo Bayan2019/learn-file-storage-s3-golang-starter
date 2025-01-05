@@ -204,6 +204,27 @@ That's slow and expensive.
 
 ## Video Streaming
 
+### Streaming
+
+Now that (almost) no one is on dial-up 256k modems, we typically don't worry about "streaming" smaller files like images.
+
+But giant audio files (like audio books), and especially large video files should be streamed rather than downloaded. 
+At least if you want your user to be able to start consuming the content immediately.
+
+The simplest way to stream a video file on the web (imo) is to take advantage of two things:
+
+1. The native HTML5 `<video>` element. 
+    It stream video files by default as long as the server supports it.
+2. The Range HTTP header. 
+    It allows the client to request specific byte ranges of a file, enabling partial downloads. 
+    S3 servers support it by default.
+
+### MP4
+
+### More Requests
+
+### Other approaches
+
 ## Security
 
 ## CDNs
