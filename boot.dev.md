@@ -236,6 +236,20 @@ Because we're mostly concerned with S3 and file storage in this course, we won't
 
 ## Security
 
+A few things to think about:
+
+1. Who can access your bucket, and which parts of your bucket can they access?
+2. What actions can they take?
+3. How are they authenticated? 
+    And from where can they authenticate?
+
+While it's great that an attacker would need to steal your AWS credentials to be able to maliciously change the contents of your bucket, relying only on the secrecy of keys is often not enough.
+
+Keys and passwords are compromised all the time.
+
+One way to add an additional layer of security is to ensure that your keys can only be used from certain (virtual) locations. 
+Then an attacker would need your keys and to be on your network to gain access.
+
 ## CDNs
 
 ## Resiliency
