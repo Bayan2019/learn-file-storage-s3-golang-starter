@@ -250,6 +250,19 @@ Keys and passwords are compromised all the time.
 One way to add an additional layer of security is to ensure that your keys can only be used from certain (virtual) locations. 
 Then an attacker would need your keys and to be on your network to gain access.
 
+### Application vs. Developer
+
+The right thing to do in production is to have your code running on a dedicated server - not on your home desktop.
+
+### Scoping Permission
+
+A critical rule of thumb in cyber security is the principle of least priviledge: You should allow the fewest permissions possible that can still get the job done.
+
+For example, your user is in the "manager" group which we gave "full admin access" to. 
+Especially at smaller companies, it's common for folks to have more permissions than they truly need, usually for the sake of speed and convenience.
+
+But that's not the most secure way to do things.
+
 ## CDNs
 
 ## Resiliency
