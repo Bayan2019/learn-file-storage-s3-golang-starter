@@ -267,6 +267,23 @@ But that's not the most secure way to do things.
 
 Now that we have a policy for the tubely app, we need a role to attach it to.
 
+### Private Bucket
+
+Public buckets are useful when you want to serve public content directly from them, like user profile pictures, for example. 
+However, you should only use them when you're certain all the content should be public, and you're okay with the risks of anyone on the internet using the bandwidth you pay AWS for to download your assets over and over again...
+
+A good use case for a public bucket might be:
+
+* Users' profile pictures
+* Public certificates of completion (we do this for Boot.dev!)
+* Dynamically generated images for social sharing (like the link previews you see on Twitter)
+
+While a **private bucket** might contain:
+
+* A user's privately uploaded documents
+* A user's draft content that they haven't published yet
+* The org's video content that's only available to paying customers
+
 ## CDNs
 
 ## Resiliency
