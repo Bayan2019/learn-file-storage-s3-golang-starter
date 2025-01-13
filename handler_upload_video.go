@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,13 +12,17 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/bootdotdev/learn-file-storage-s3-golang-starter/internal/auth"
+	"github.com/bootdotdev/learn-file-storage-s3-golang-starter/internal/database"
 	"github.com/google/uuid"
 )
 
+// Update the handlerUploadVideo handler code to store bucket and key as a comma delimited string in the video_url.
 func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request) {
 	// Set an upload limit of 1 GB (1 << 30 bytes)
 	const uploadLimit = 1 << 30
@@ -144,7 +149,7 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 		// The bucket name
 		Bucket:      aws.String(cfg.s3Bucket),
 		Key:         aws.String(key),
-		Body:        processedFile,
+		Body:        tempFile,
 		ContentType: aws.String(mediaType),
 	})
 	if err != nil {
@@ -153,11 +158,17 @@ func (cfg *apiConfig) handlerUploadVideo(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Update the VideoURL of the video record in the database with the S3 bucket and key.
-	url := cfg.getObjectURL(key)
+	// to store bucket and key as a comma delimited string in the video_url
+	url := fmt.Sprintf("%s,%s", cfg.s3Bucket, key)
 	video.VideoURL = &url
 	err = cfg.db.UpdateVideo(video)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't update video", err)
+		return
+	}
+	video, err = cfg.dbVideoToSignedVideo(video)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't generate presigned URL", err)
 		return
 	}
 
@@ -240,4 +251,42 @@ func processVideoForFastStart(filePath string) (string, error) {
 
 	// Return the output file path
 	return newFilePath, nil
+}
+
+func (cfg *apiConfig) dbVideoToSignedVideo(video database.Video) (database.Video, error) {
+	if video.VideoURL == nil {
+		return video, nil
+	}
+	// It should first split the video.VideoURL on the comma
+	parts := strings.Split(*video.VideoURL, ",")
+	if len(parts) < 2 {
+		return video, nil
+	}
+	// to get the bucket
+	bucket := parts[0]
+	// and key
+	key := parts[1]
+	// use generatePresignedURL to get a presigned URL for the video
+	presigned, err := generatePresignedURL(cfg.s3Client, bucket, key, 5*time.Minute)
+	if err != nil {
+		return video, err
+	}
+	// with the VideoURL field set to a presigned URL
+	video.VideoURL = &presigned
+	return video, nil
+}
+
+func generatePresignedURL(s3Client *s3.Client, bucket, key string, expireTime time.Duration) (string, error) {
+	// Use the SDK to create a s3.PresignClient with s3.NewPresignClient
+	presignClient := s3.NewPresignClient(s3Client)
+	// Use the client's .PresignGetObject() method with s3.WithPresignExpires as a functional option.
+	presignedUrl, err := presignClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	}, s3.WithPresignExpires(expireTime))
+	if err != nil {
+		return "", fmt.Errorf("failed to generate presigned URL: %v", err)
+	}
+	// Return the .URL field of the v4.PresignedHTTPRequest created by .PresignGetObject()
+	return presignedUrl.URL, nil
 }

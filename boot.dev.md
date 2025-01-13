@@ -284,6 +284,14 @@ While a **private bucket** might contain:
 * A user's draft content that they haven't published yet
 * The org's video content that's only available to paying customers
 
+### Signed URLs
+
+Presigned URLs are a way to give temporary access to a private object in S3. 
+S3 will generate a URL (by attaching a cryptographic signature) that allows access to the object for a limited time. 
+To be clear, it doesn't require the user to be logged in - it's just a URL that expires.
+
+The idea is that we'll generate these URLs with very short life spans, and then only give them to users who have already been authenticated by your application.
+
 ## CDNs
 
 ## Resiliency
