@@ -263,6 +263,10 @@ Especially at smaller companies, it's common for folks to have more permissions 
 
 But that's not the most secure way to do things.
 
+### Roles
+
+Now that we have a policy for the tubely app, we need a role to attach it to.
+
 ## CDNs
 
 ## Resiliency
