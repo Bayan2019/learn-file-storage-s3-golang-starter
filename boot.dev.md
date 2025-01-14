@@ -292,6 +292,53 @@ To be clear, it doesn't require the user to be logged in - it's just a URL that 
 
 The idea is that we'll generate these URLs with very short life spans, and then only give them to users who have already been authenticated by your application.
 
+### Encryption
+
+Although our S3 bucket is private (which means outsiders can't gain access to the files directly without credentials), it's still good for stuff to be encrypted. 
+After all, what if a hacker physically walked into the data center to read our customers' secrets directly?
+
+#### At Rest
+
+Files in S3 are encrypted at rest ("at rest" just means "while they're sitting in storage on disk") by default. 
+This was not always the case, but it is now! 
+You don't need to do anything, the S3 service takes care of all of that for you. 
+When you access S3 with your credentials, the service decrypts the files for you before handing them over.
+
+#### In Transit
+
+When you're uploading or downloading files from S3, how do you know that someone can't intercept the data as it travels through the internet? 
+Well, when you access S3 via the web, you're using httpS. 
+The S means that the data is encrypted as it travels between your computer and the S3 service.
+
+When you access S3 via the SDK (in your Go code), it also uses HTTPS by default. 
+So as long as you don't go out of your way to disable encryption, you're good to go.
+
 ## CDNs
+
+### Regions
+
+A region is a geographic location where AWS has data centers. 
+Data centers are clustered into "availability zones" (or "AZ" for acronym masochists enjoyers).
+
+By default, your S3 bucket is replicated across multiple availability zones in a single region. 
+That said, there are options to automatically replicate your bucket's data across multiple regions. 
+(We won't do that, but it's good to know about.)
+
+### CDNs
+
+A Content Delivery Network (CDN) is a (typically global) network of servers that caches and delivers content to users based on their geographic location.
+
+When we give users a URL to an S3 object, they'll download that object from the S3 service in the region that our bucket lives in (for me, that's us-east-2, near Ohio in the USA).
+
+If a user in Australia tries to download that object, they're going to have to wait for the data to travel from Ohio to Australia... and that's a long way! 
+A CDN, like AWS CloudFront, can help with that. 
+It takes a static asset, like an image or video, and caches it on servers all over the world. 
+When a user requests the asset, they get it from the server closest to them, which is much faster.
+
+### Use CloudFront
+
+### Invalidations
+
+### Why CDNs?
 
 ## Resiliency
