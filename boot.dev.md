@@ -357,4 +357,24 @@ That means it will be slower for the first user, but fast again for subsequent u
 
 ### Why CDNs?
 
+A CDN like CloudFront has two purposes (as far as the context of this course is concerned):
+
+* **Speed**: Users get content from the server closest to them, which is faster than getting it from the origin server.
+* **Security**: The origin server is hidden from the public internet, and only the CDN can access it. 
+    This is a security measure that can help prevent DDoS attacks and other malicious activity.
+
+Some CDNs, like CloudFlare, (not to be confused with CloudFront) are known for their incredibly robust security features. 
+Things like DDoS protection, Web Application Firewalls, etc.
+
+Images and videos are certainly common, but in reality any static asset is a good fit for a CDN. 
+Here at Boot.dev, we use CloudFlare's CDN to serve the static assets for our frontend:
+
+* Images
+* HTML
+* CSS
+* JS
+
+We deploy on their edge network, which means that our users get the initial HTML document quickly. 
+That said, our backend server is a Go application running in a single region in the United States, so any dynamic requests to our API still have to come all the way back to the US.
+
 ## Resiliency
