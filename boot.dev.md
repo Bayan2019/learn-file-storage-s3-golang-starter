@@ -398,7 +398,39 @@ But its very hard, and very expensive.
 
 ### Reliability
 
+Okay, so let's say you've got 5 9's of availability. 
+That's 99.999% uptime. 
+Pretty solid. 
+But what about reliability?
+
+Reliability is about how well your system works when it's up. 
+For example, maybe your server is responding to HTTP requests, but it's returning erroneous data because some dependency is down. 
+That's not reliable.
+
+The reliability of S3 is very high out of the box.
+
 ### Durability
+
+Durability is the last in the resiliency trifecta:
+
+* Availability
+* Reliability
+* Durability
+
+It's about how well your data survives in the event of an outage. 
+
+For example, let's say you're running your own single server:
+
+1. What happens if the intern accidentally rm -rfs the user_pics directory?
+2. What happens if the server's hard drive fails?
+3. What happens if the data center it's in catches fire?
+
+These are all durability questions. 
+Durability is primarily about backups and redundancy. 
+In the case of S3, it automatically replicates your data across multiple servers. 
+If one goes down, the backups are there.
+
+According to these docs S3's standard storage provides 99.999999999% durability and 99.99% availability of objects over a given year. Nice.
 
 ### Bucket Versioning
 
