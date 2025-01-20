@@ -378,3 +378,28 @@ We deploy on their edge network, which means that our users get the initial HTML
 That said, our backend server is a Go application running in a single region in the United States, so any dynamic requests to our API still have to come all the way back to the US.
 
 ## Resiliency
+
+### Availability
+
+I mentioned earlier that one of the big advantages of "serverless" (and in particular, S3) is that it takes care of a lot of the "IT ops" work that traditionally engineers at every company had to homebrew.
+
+One of those is availability: how often your service is up and running, serving user requests. 
+It's often measured in "nines" - like "three nines" (99.9%) or "five nines" (99.999%).
+
+See, users don't like when they log into your web app and stuff isn't loading. 
+They don't like to hear that you're "down for maintenance".
+
+AWS and S3 aren't perfect - but they are really good at availability. 
+When AWS has outages, it's big news. 
+Partly because so much of the internet runs on AWS, but also because they're rare.
+
+You could build your own cluster of servers with better than or equal to one of the large cloud provider's availability. 
+But its very hard, and very expensive.
+
+### Reliability
+
+### Durability
+
+### Bucket Versioning
+
+### Delete
