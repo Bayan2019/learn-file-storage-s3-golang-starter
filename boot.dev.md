@@ -337,6 +337,9 @@ When a user requests the asset, they get it from the server closest to them, whi
 
 ### Use CloudFront
 
+Signed URLs are useful for truly private content, but if all you need is more protection and control over files that you want to make publicly accessible, a CDN is a better choice. 
+CDN's like CloudFront not only offer better security than serving files directly from S3 (due to more granular controls, firewalls, and DDoS protection), but they also offer better performance.
+
 ### Invalidations
 
 ### Why CDNs?
