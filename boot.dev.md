@@ -342,6 +342,19 @@ CDN's like CloudFront not only offer better security than serving files directly
 
 ### Invalidations
 
+A CDN is a massive, globally distributed cache. 
+Sure, we get massive performance improvements, because users that are geographically close to an edge server can download assets much faster than if they had to travel to the origin server.
+
+But what happens when we update an asset? 
+How long does it take the edge servers to update their versions? 
+The answer is: it depends. 
+That's always the tradeoff with cache - you need to deal with invalidations. 
+Luckily CloudFront makes it fairly easy to force invalidations of the cache.
+
+An invalidation is a request to remove an object from the cache. 
+That means the next time a user requests the object, the edge server will have to go back to the origin server to get the latest version. 
+That means it will be slower for the first user, but fast again for subsequent users.
+
 ### Why CDNs?
 
 ## Resiliency
