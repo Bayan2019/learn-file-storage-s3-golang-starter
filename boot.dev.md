@@ -434,4 +434,12 @@ According to these docs S3's standard storage provides 99.999999999% durability 
 
 ### Bucket Versioning
 
-### Delete
+By default, S3 does not store multiple versions of an object. 
+If you upload a file to a key that already contains an object, the old object is overwritten.
+
+Bucket versioning is an optional feature where the bucket stores multiple versions of an object. 
+It helps:
+
+* Prevent accidental deletion
+* Rollback to previous versions of files
+* Store multiple versions of files in the same key
